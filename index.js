@@ -16,14 +16,28 @@ async function run() {
 try{
     await client.connect();
     const productCollection = client.db('laptop-parts').collection('product');
+    const purchaseCollection = client.db('laptop-parts').collection('purchases');
 
 
-    app.get('/product', async (req,res) => {
+    app.get('/purchase', async (req,res) => {
       const query = {}
       const cursor= productCollection.find(query);
       const products = await cursor.toArray();
       res.send(products);
     });
+
+    app.get('/purchase/:id', async(req, res) =>{
+        const id = req.params.id;
+        const query= {_id: ObjectId(id)};
+        const product = await productCollection.findOne(query);
+        res.send(product);
+    })
+
+    app.post('/purchase', async(req,res) =>{
+        const purchase = req.body;
+        const result = await purchaseCollection.insertOne(purchase);
+        res.send(result);
+    })
 
 }
 finally{
