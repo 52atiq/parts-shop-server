@@ -17,6 +17,7 @@ try{
     await client.connect();
     const productCollection = client.db('laptop-parts').collection('product');
     const purchaseCollection = client.db('laptop-parts').collection('purchases');
+    const userCollection = client.db('laptop-parts').collection('user');
 
 
     app.get('/purchase', async (req,res) => {
@@ -32,11 +33,36 @@ try{
         const product = await productCollection.findOne(query);
         res.send(product);
     })
+// to get purchase list
+    app.get('/purchase', async(req,res) =>{
+        const Email= req.query.Email;
+        const query = {Email: Email};
+        const purchases = await purchaseCollection.find(query).toArray();
+        res.send(purchases)
+    })
 
     app.post('/purchase', async(req,res) =>{
         const purchase = req.body;
+        const query = {productName: purchase.productName, Email:purchase.Email}
+        const exists = await purchaseCollection.findOne(query);
+        if(exists){
+            return res.send({success: false, purchase: exists})
+        }
         const result = await purchaseCollection.insertOne(purchase);
-        res.send(result);
+        return  res.send( { success: true, result} );
+    })
+
+    app.put('/user/:email', async(req,res) =>{
+        const email = req.params.email;
+        const user = req.body;
+        const filter = { email: email };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: user,
+        };
+        const result =await userCollection.updateOne(filter, updateDoc, options);
+        res.send()
+
     })
 
 }
