@@ -37,6 +37,7 @@ try{
     const purchaseCollection = client.db('laptop-parts').collection('purchases');
     const userCollection = client.db('laptop-parts').collection('user');
     const reviewsCollection = client.db('laptop-parts').collection('reviews');
+    const addProductCollection = client.db('laptop-parts').collection('addProduct');
     
 
 
@@ -145,6 +146,13 @@ try{
         const Reviews = await cursor.toArray();
         res.send(Reviews);
     });
+
+    // app product api
+    app.post('/addProduct',  async(req, res) =>{
+        const addProduct = req.body;
+        const result = await addProductCollection.insertOne(addProduct);
+        res.send(result);
+    })
 
 }
 finally{
