@@ -160,7 +160,13 @@ try{
         res.send(addProducts)
     }) 
 
-   
+    app.delete('/addProduct/:email', async(req, res) =>{
+        const email = req.params.email;
+        const filter = {email: email};
+
+        const result = await addProductCollection.deleteOne(filter);
+        res.send(result)
+    }) 
 
 }
 finally{
