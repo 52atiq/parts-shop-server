@@ -180,6 +180,9 @@ app.get('/', (req,res) =>{
     res.send('Running laptop-parts server');
 });
 
+app.get('/hero', (req, res) =>{
+    res.send("hero run")
+})
 app.listen(port, () =>{
     console.log('Listening to port', port);
 })
