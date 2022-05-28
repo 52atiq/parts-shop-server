@@ -36,10 +36,13 @@ try{
     const productCollection = client.db('laptop-parts').collection('product');
     const purchaseCollection = client.db('laptop-parts').collection('purchases');
     const userCollection = client.db('laptop-parts').collection('user');
+    const reviewsCollection = client.db('laptop-parts').collection('reviews');
+    
 
 
     app.get('/purchase', async (req,res) => {
       const query = {}
+    //   const cursor= productCollection.find(query).project({name:1});
       const cursor= productCollection.find(query);
       const products = await cursor.toArray();
       res.send(products);
@@ -91,17 +94,30 @@ try{
 
     });
 
-    app.put('/user/admin/:email', async(req,res) =>{
+      app.get('/admin/:email', async(req, res) =>{
+          const email = req.params.email;
+          const user = await userCollection.findOne({email: email});
+          const isAdmin = user.role === 'admin';
+          res.send({admin: isAdmin});
+      })
+
+    //  admin api 
+    app.put('/user/admin/:email', verifyJWT, async(req,res) =>{
         const email = req.params.email;
-        // const user = req.body;
+       const requester = req.decoded.email;
+       const requesterAccount = await userCollection.findOne({email: requester});
+       if(requesterAccount.role === 'admin'){
         const filter = { email: email };
-        // const options = { upsert: true };
         const updateDoc = {
           $set:{role: 'admin'},
         };
         const result =await userCollection.updateOne(filter, updateDoc);
-        // const token = jwt.sign({email:email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
         res.send(result);
+       }
+       else{
+           res.status(403).send({message: 'forbidden'})
+       }
+       
 
     });
 
@@ -110,6 +126,25 @@ try{
     const users = await userCollection.find().toArray();
     res.send(users);
     })
+
+
+
+      //Add review api
+      app.post('/reviews', async (req, res) => {
+        const reviews = req.body;
+        console.log('hit the post api', reviews);
+        const result = await reviewsCollection.insertOne(reviews);
+        console.log(result);
+        res.send(result);
+    });
+
+    //get review api
+      app.get('/reviews', async (req, res) => {
+          const query ={}
+        const cursor = reviewsCollection.find(query);
+        const Reviews = await cursor.toArray();
+        res.send(Reviews);
+    });
 
 }
 finally{
