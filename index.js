@@ -147,12 +147,20 @@ try{
         res.send(Reviews);
     });
 
-    // app product api
+    // add product api
     app.post('/addProduct',  async(req, res) =>{
         const addProduct = req.body;
         const result = await addProductCollection.insertOne(addProduct);
         res.send(result);
     })
+
+    //load product api
+    app.get('/addProduct', async(req, res) =>{
+        const addProducts = await addProductCollection.find().toArray();
+        res.send(addProducts)
+    }) 
+
+   
 
 }
 finally{
