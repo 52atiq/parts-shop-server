@@ -159,7 +159,7 @@ try{
         const addProducts = await addProductCollection.find().toArray();
         res.send(addProducts)
     }) 
-
+    //product delete api
     app.delete('/addProduct/:email', async(req, res) =>{
         const email = req.params.email;
         const filter = {email: email};
@@ -180,9 +180,7 @@ app.get('/', (req,res) =>{
     res.send('Running laptop-parts server');
 });
 
-app.get('/atiq', (req, res) =>{
-    res.send("atiq is running")
-})
+
 app.listen(port, () =>{
     console.log('Listening to port', port);
 })
